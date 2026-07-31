@@ -9,9 +9,6 @@ lerna-debug.log*
 
 # Trình quản lý gói (Package Managers)
 node_modules/
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
 
 # Thư mục build của Vite và Electron
 dist/
