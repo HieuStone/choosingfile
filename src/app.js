@@ -7,6 +7,7 @@ const state = {
   operation: 'copy',
   scannedResults: null,
   lastProcessedDir: null,
+  fileExtension: '',
 }
 
 // DOM Elements
@@ -16,6 +17,7 @@ const sourceFileCount = document.getElementById('source-file-count')
 
 const keywordsInput = document.getElementById('keywords-input')
 const keywordCountBadge = document.getElementById('keyword-count-badge')
+const extFilterInput = document.getElementById('ext-filter-input')
 
 const radioMatchModes = document.querySelectorAll('input[name="match-mode"]')
 const radioOperations = document.querySelectorAll('input[name="operation"]')
@@ -68,6 +70,10 @@ function parseKeywords(text) {
 keywordsInput.addEventListener('input', () => {
   state.keywords = parseKeywords(keywordsInput.value)
   keywordCountBadge.textContent = `${state.keywords.length} từ khóa`
+})
+
+extFilterInput.addEventListener('input', () => {
+  state.fileExtension = extFilterInput.value.trim()
 })
 
 // 2. Tùy chọn Match Mode
@@ -139,6 +145,7 @@ btnScan.addEventListener('click', async () => {
       sourceDir: state.sourceDir,
       keywords: state.keywords,
       matchMode: state.matchMode,
+      fileExtension: state.fileExtension,
     })
 
     if (!res.success) {

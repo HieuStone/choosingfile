@@ -92,7 +92,7 @@ function setupIpcHandlers() {
   })
 
   // 2. Quét & đối chiếu danh sách từ khóa với file trong thư mục
-  ipcMain.handle('fs:scanDirectory', async (event, { sourceDir, keywords, matchMode }) => {
+  ipcMain.handle('fs:scanDirectory', async (event, { sourceDir, keywords, matchMode, fileExtension }) => {
     try {
       if (!fs.existsSync(sourceDir)) {
         throw new Error('Thư mục nguồn không tồn tại!')
@@ -119,6 +119,14 @@ function setupIpcHandlers() {
       const matchedFilesMap = new Map()
       const matchedKeywordsSet = new Set()
 
+      let targetExtLower = ''
+      if (fileExtension && fileExtension.trim()) {
+        targetExtLower = fileExtension.trim().toLowerCase()
+        if (!targetExtLower.startsWith('.')) {
+          targetExtLower = '.' + targetExtLower
+        }
+      }
+
       for (const kw of keywords) {
         const cleanKw = kw.trim()
         if (!cleanKw) continue
@@ -126,6 +134,11 @@ function setupIpcHandlers() {
         const kwLower = cleanKw.toLowerCase()
 
         for (const file of files) {
+          if (targetExtLower) {
+            const ext = path.extname(file.name).toLowerCase()
+            if (ext !== targetExtLower) continue
+          }
+
           let isMatch = false
           const fileNameLower = file.name.toLowerCase()
           const fileNoExtLower = file.nameNoExt.toLowerCase()
