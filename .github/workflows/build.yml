@@ -1,4 +1,4 @@
-name: Build Electron App
+name: Build Electron App for macOS
 
 on:
   push:
@@ -7,10 +7,7 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
 
     steps:
       - name: Checkout Code
@@ -25,19 +22,13 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build for Windows
-        if: matrix.os == 'windows-latest'
-        run: npm run build:win
-
       - name: Build for macOS
-        if: matrix.os == 'macos-latest'
         run: npm run build:mac
         
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: App-Build-${{ matrix.os }}
+          name: App-Build-macos
           path: |
-            release/*.exe
             release/*.dmg
             release/*.zip
