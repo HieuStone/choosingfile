@@ -1,0 +1,56 @@
+{
+  "name": "file-filter-collector",
+  "version": "1.0.0",
+  "description": "Ứng dụng lọc và gom file hàng loạt đa nền tảng (Windows & macOS)",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:win": "vite build && electron-builder --win",
+    "build:mac": "vite build && electron-builder --mac",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "electron",
+    "file-filter",
+    "photo-picker",
+    "vite"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8",
+    "vite": "^6.0.0",
+    "vite-plugin-electron": "^0.15.6",
+    "vite-plugin-electron-renderer": "^0.14.6"
+  },
+  "build": {
+    "appId": "com.chonanh.app",
+    "productName": "File Filter & Collector",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.utilities"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

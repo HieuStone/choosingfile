@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Filter & Collector - Chọn Ảnh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/index.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title-group">
+        <div class="logo-icon">⚡</div>
+        <div>
+          <h1 class="title">File Harvester & Collector</h1>
+          <p class="subtitle">Ứng dụng lọc & gom file hàng loạt - Siêu nhanh cho Windows & macOS</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge badge-platform" id="platform-badge">🚀 Cross-Platform Ready</span>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-grid">
+      <!-- Left Column: Controls & Input -->
+      <div class="panel controls-panel">
+        <!-- 1. Source Folder Selection -->
+        <section class="card">
+          <div class="card-header">
+            <span class="step-num">1</span>
+            <h3>Thư mục nguồn chứa file</h3>
+          </div>
+          <div class="card-body">
+            <button id="btn-select-source" class="btn btn-secondary">
+              <span class="icon">📁</span> Chọn Thư Mục Nguồn
+            </button>
+            <div class="path-display" id="source-path-display">
+              <span class="placeholder-text">Chưa chọn thư mục nào...</span>
+            </div>
+            <div class="folder-stats">
+              <span>Tổng file trong thư mục:</span>
+              <strong id="source-file-count">0</strong>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Keyword List Input -->
+        <section class="card">
+          <div class="card-header">
+            <span class="step-num">2</span>
+            <h3>Danh sách từ khóa / tên file lọc</h3>
+            <span class="badge badge-info" id="keyword-count-badge">0 từ khóa</span>
+          </div>
+          <div class="card-body">
+            <textarea id="keywords-input" placeholder="Dán danh sách tên file vào đây (VD: 001, 003, 006 hoặc IMG_001, IMG_002)...&#10;Hỗ trợ phân cách bằng dấu phẩy, dấu cách, tab hoặc xuống dòng." rows="6"></textarea>
+            
+            <div class="match-mode-group">
+              <label class="form-label">Chế độ khớp tên:</label>
+              <div class="radio-options">
+                <label class="radio-card active">
+                  <input type="radio" name="match-mode" value="contains" checked>
+                  <div class="radio-content">
+                    <strong>🔍 Khớp một phần (Khuyên dùng)</strong>
+                    <span>Gõ "001" khớp "file0001.jpg", "IMG_0001.RAW"</span>
+                  </div>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="match-mode" value="exact-no-ext">
+                  <div class="radio-content">
+                    <strong>🎯 Khớp chính xác (Bỏ qua đuôi file)</strong>
+                    <span>Gõ "file0001" chỉ khớp đúng "file0001.jpg"</span>
+                  </div>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="match-mode" value="exact-with-ext">
+                  <div class="radio-content">
+                    <strong>🔒 Khớp tuyệt đối (Kèm đuôi file)</strong>
+                    <span>Gõ "file0001.jpg" mới khớp</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Destination & Operation -->
+        <section class="card">
+          <div class="card-header">
+            <span class="step-num">3</span>
+            <h3>Đích đến & Thao tác</h3>
+          </div>
+          <div class="card-body">
+            <div class="operation-toggle">
+              <label class="toggle-btn active" id="lbl-op-copy">
+                <input type="radio" name="operation" value="copy" checked>
+                <span>🟢 Copy File (Giữ bản gốc)</span>
+              </label>
+              <label class="toggle-btn" id="lbl-op-move">
+                <input type="radio" name="operation" value="move">
+                <span>🟠 Move File (Cắt sang mục mới)</span>
+              </label>
+            </div>
+
+            <div class="dest-group">
+              <button id="btn-select-dest" class="btn btn-outline">
+                <span class="icon">📂</span> Chọn Thư Mục Đích (Tùy chọn)
+              </button>
+              <div class="path-display small" id="dest-path-display">
+                <span class="placeholder-text">Mặc định: Tự tạo thư mục "Filtered_Files..." bên trong thư mục nguồn</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Scan Button -->
+        <button id="btn-scan" class="btn btn-primary btn-large glow-effect">
+          <span class="icon">⚡</span> Quét & Đối Chiếu Dữ Liệu
+        </button>
+      </div>
+
+      <!-- Right Column: Results & Execution -->
+      <div class="panel results-panel">
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state">
+          <div class="empty-icon">📂✨</div>
+          <h3>Chưa có kết quả quét</h3>
+          <p>Hãy thực hiện theo 3 bước bên trái, sau đó bấm nút <strong>"Quét & Đối Chiếu Dữ Liệu"</strong> để xem trước danh sách các file được lọc.</p>
+        </div>
+
+        <!-- Scanned Results Content (Hidden by default) -->
+        <div id="results-content" class="results-content hidden">
+          <!-- Summary Stats -->
+          <div class="results-summary">
+            <div class="stat-box success">
+              <span class="stat-label">File Tìm Thấy</span>
+              <strong class="stat-value" id="matched-file-count">0</strong>
+            </div>
+            <div class="stat-box warning">
+              <span class="stat-label">Từ Khóa Thiếu (Không thấy file)</span>
+              <strong class="stat-value" id="unmatched-kw-count">0</strong>
+            </div>
+          </div>
+
+          <!-- Tabs Navigation -->
+          <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="tab-matched">
+              ✅ File Phù Hợp (<span id="tab-count-matched">0</span>)
+            </button>
+            <button class="tab-btn" data-tab="tab-unmatched">
+              ❌ Từ Khóa Bị Thiếu (<span id="tab-count-unmatched">0</span>)
+            </button>
+          </div>
+
+          <!-- Tab 1: Matched Files Table -->
+          <div id="tab-matched" class="tab-pane active">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Tên File</th>
+                    <th>Kích thước</th>
+                    <th>Từ khóa khớp</th>
+                  </tr>
+                </thead>
+                <tbody id="table-matched-body">
+                  <!-- JS dynamically fills this -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab 2: Unmatched Keywords -->
+          <div id="tab-unmatched" class="tab-pane">
+            <div class="unmatched-notice">
+              <p>⚠️ Các từ khóa bên dưới <strong>không tìm thấy</strong> file tương ứng nào trong thư mục nguồn. Hãy kiểm tra lại chính tả hoặc chắc chắn rằng file có tồn tại:</p>
+            </div>
+            <div class="tags-container" id="unmatched-tags-container">
+              <!-- JS dynamically fills this -->
+            </div>
+          </div>
+
+          <!-- Execution Section -->
+          <div class="execution-section">
+            <!-- Progress Bar (Hidden until execution) -->
+            <div id="progress-container" class="progress-container hidden">
+              <div class="progress-info">
+                <span id="progress-status-text">Đang sao chép file...</span>
+                <strong id="progress-percent-text">0%</strong>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Action Button -->
+            <button id="btn-execute" class="btn btn-success btn-large">
+              <span class="icon">✨</span> Thực Hiện Copy File
+            </button>
+
+            <!-- Completion Banner -->
+            <div id="completion-banner" class="completion-banner hidden">
+              <div class="banner-icon">🎉</div>
+              <div class="banner-text">
+                <h4>Hoàn tất xử lý dữ liệu!</h4>
+                <p id="completion-summary-text">Đã xử lý 0 file thành công.</p>
+              </div>
+              <button id="btn-open-folder" class="btn btn-secondary btn-small">
+                <span class="icon">📂</span> Mở Thư Mục Kết Quả
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
